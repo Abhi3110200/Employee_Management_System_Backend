@@ -7,6 +7,8 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const auth_routes_js_1 = __importDefault(require("./routes/auth.routes.js"));
+const employee_routes_js_1 = __importDefault(require("./routes/employee.routes.js"));
+const hierarchy_routes_js_1 = __importDefault(require("./routes/hierarchy.routes.js"));
 const app = (0, express_1.default)();
 // Middleware
 app.use((0, cors_1.default)({
@@ -26,6 +28,9 @@ app.get('/api/health', (_req, res) => {
 });
 // API Routes
 app.use('/api/auth', auth_routes_js_1.default);
+app.use('/api/employees', employee_routes_js_1.default);
+app.use('/api/hierarchy', hierarchy_routes_js_1.default);
+app.use('/api/organization', hierarchy_routes_js_1.default);
 // 404 Handler
 app.use((_req, res) => {
     res.status(404).json({

@@ -40,6 +40,11 @@ exports.User = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const userSchema = new mongoose_1.Schema({
+    employeeId: {
+        type: String,
+        unique: true,
+        trim: true,
+    },
     name: {
         type: String,
         required: [true, 'Name is required'],
@@ -58,10 +63,66 @@ const userSchema = new mongoose_1.Schema({
         minlength: [6, 'Password must be at least 6 characters'],
         select: false,
     },
+    phone: {
+        type: String,
+        default: '',
+        trim: true,
+    },
+    department: {
+        type: String,
+        default: 'Engineering',
+        trim: true,
+    },
+    designation: {
+        type: String,
+        default: 'Staff Member',
+        trim: true,
+    },
+    position: {
+        type: String,
+        default: 'Staff Member',
+        trim: true,
+    },
+    salary: {
+        type: Number,
+        default: 0,
+    },
+    joiningDate: {
+        type: Date,
+        default: Date.now,
+    },
+    status: {
+        type: String,
+        enum: ['active', 'inactive'],
+        default: 'active',
+    },
     role: {
         type: String,
-        enum: ['admin', 'manager', 'employee'],
+        enum: ['super_admin', 'hr_manager', 'employee'],
         default: 'employee',
+    },
+    manager: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null,
+    },
+    profileImage: {
+        type: String,
+        default: '',
+        trim: true,
+    },
+    address: {
+        type: String,
+        default: '',
+        trim: true,
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false,
+    },
+    deletedAt: {
+        type: Date,
+        default: null,
     },
     refreshTokens: {
         type: [String],
@@ -69,9 +130,27 @@ const userSchema = new mongoose_1.Schema({
     },
 }, {
     timestamps: true,
+    toJSON: {
+        virtuals: true,
+        transform: (_doc, ret) => {
+            ret.id = ret._id ? ret._id.toString() : ret.id;
+            delete ret.__v;
+            return ret;
+        },
+    },
 });
-// Pre-save hook for password hashing (async without callback for modern Mongoose typings)
+// Pre-save hook for password hashing & employeeId generation
 userSchema.pre('save', async function () {
+    if (!this.employeeId) {
+        const randomCode = Math.floor(1000 + Math.random() * 9000);
+        this.employeeId = `EMP-${randomCode}`;
+    }
+    if (this.designation && !this.position) {
+        this.position = this.designation;
+    }
+    else if (this.position && !this.designation) {
+        this.designation = this.position;
+    }
     if (!this.isModified('password') || !this.password) {
         return;
     }

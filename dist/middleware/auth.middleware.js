@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authorize = exports.protect = void 0;
 const token_utils_js_1 = require("../utils/token.utils.js");
+const user_model_js_1 = require("../models/user.model.js");
 const protect = async (req, res, next) => {
     try {
         let token;
@@ -37,17 +38,41 @@ const protect = async (req, res, next) => {
     }
 };
 exports.protect = protect;
+/**
+ * Authorization middleware that queries the database directly
+ * to verify the user's current role stored in MongoDB.
+ */
 const authorize = (...roles) => {
-    return (req, res, next) => {
-        if (!req.user || !roles.includes(req.user.role)) {
-            res.status(403).json({
-                status: 'error',
-                code: 'FORBIDDEN',
-                message: `User role '${req.user?.role || 'unknown'}' is not authorized to access this resource`,
-            });
-            return;
+    return async (req, res, next) => {
+        try {
+            if (!req.user) {
+                res.status(401).json({
+                    status: 'error',
+                    code: 'UNAUTHORIZED',
+                    message: 'Not authenticated',
+                });
+                return;
+            }
+            // Query MongoDB directly to check current role assigned to the user
+            const dbUser = await user_model_js_1.User.findById(req.user.id).select('role');
+            if (!dbUser || !roles.includes(dbUser.role)) {
+                res.status(403).json({
+                    status: 'error',
+                    code: 'FORBIDDEN',
+                    message: `User role '${dbUser?.role || 'unknown'}' is not authorized to access this resource`,
+                });
+                return;
+            }
+            // Ensure req.user reflects latest DB role
+            req.user.role = dbUser.role;
+            next();
         }
-        next();
+        catch (error) {
+            res.status(500).json({
+                status: 'error',
+                message: error.message || 'Authorization check failed',
+            });
+        }
     };
 };
 exports.authorize = authorize;
