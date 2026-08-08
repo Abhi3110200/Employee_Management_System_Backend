@@ -4,8 +4,8 @@ import { UserPayload } from '../types/express.d.js';
 const ACCESS_SECRET = (process.env.JWT_ACCESS_SECRET || 'access_secret_fallback') as jwt.Secret;
 const REFRESH_SECRET = (process.env.JWT_REFRESH_SECRET || 'refresh_secret_fallback') as jwt.Secret;
 
-const ACCESS_EXPIRES_IN = process.env.JWT_ACCESS_EXPIRES_IN || '15m';
-const REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
+const ACCESS_EXPIRES_IN = process.env.JWT_ACCESS_EXPIRES_IN || '15d';
+const REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '30d';
 
 export const generateAccessToken = (payload: UserPayload): string => {
   return jwt.sign(payload, ACCESS_SECRET, {
