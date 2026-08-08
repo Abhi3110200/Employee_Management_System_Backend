@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { Request, Response } from 'express';
 import { User } from '../models/user.model.js';
 import { willCauseCircularReporting } from '../utils/hierarchy.utils.js';
@@ -221,6 +222,8 @@ export const createEmployee = async (req: Request, res: Response): Promise<void>
       return;
     }
 
+    const validManager = manager && typeof manager === 'string' && mongoose.Types.ObjectId.isValid(manager) ? manager : null;
+
     const newEmployee = new User({
       employeeId,
       name,
@@ -234,7 +237,7 @@ export const createEmployee = async (req: Request, res: Response): Promise<void>
       joiningDate: joiningDate ? new Date(joiningDate) : new Date(),
       status: status || 'active',
       role: assignedRole,
-      manager: manager || null,
+      manager: validManager,
       profileImage: profileImage || '',
       address: address || '',
       refreshTokens: [],
