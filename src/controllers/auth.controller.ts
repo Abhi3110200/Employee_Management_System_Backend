@@ -70,6 +70,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       status: 'success',
       message: 'User registered successfully',
       accessToken,
+      refreshToken,
       user: {
         id: user._id,
         name: user.name,
@@ -145,6 +146,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       status: 'success',
       message: 'Logged in successfully',
       accessToken,
+      refreshToken,
       user: {
         id: user._id,
         name: user.name,
@@ -218,6 +220,7 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
     res.status(200).json({
       status: 'success',
       accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
       user: {
         id: user._id,
         name: user.name,
