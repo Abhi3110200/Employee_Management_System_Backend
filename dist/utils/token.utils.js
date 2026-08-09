@@ -7,8 +7,8 @@ exports.verifyRefreshToken = exports.verifyAccessToken = exports.generateRefresh
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const ACCESS_SECRET = (process.env.JWT_ACCESS_SECRET || 'access_secret_fallback');
 const REFRESH_SECRET = (process.env.JWT_REFRESH_SECRET || 'refresh_secret_fallback');
-const ACCESS_EXPIRES_IN = process.env.JWT_ACCESS_EXPIRES_IN || '15m';
-const REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
+const ACCESS_EXPIRES_IN = process.env.JWT_ACCESS_EXPIRES_IN || '15d';
+const REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '30d';
 const generateAccessToken = (payload) => {
     return jsonwebtoken_1.default.sign(payload, ACCESS_SECRET, {
         expiresIn: ACCESS_EXPIRES_IN,

@@ -9,6 +9,10 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const auth_routes_js_1 = __importDefault(require("./routes/auth.routes.js"));
 const employee_routes_js_1 = __importDefault(require("./routes/employee.routes.js"));
 const hierarchy_routes_js_1 = __importDefault(require("./routes/hierarchy.routes.js"));
+const leave_routes_js_1 = __importDefault(require("./routes/leave.routes.js"));
+const performance_routes_js_1 = __importDefault(require("./routes/performance.routes.js"));
+const department_routes_js_1 = __importDefault(require("./routes/department.routes.js"));
+const analytics_routes_js_1 = __importDefault(require("./routes/analytics.routes.js"));
 const app = (0, express_1.default)();
 const allowedOrigins = [
     'http://localhost:3000',
@@ -50,6 +54,11 @@ app.use('/api/auth', auth_routes_js_1.default);
 app.use('/api/employees', employee_routes_js_1.default);
 app.use('/api/hierarchy', hierarchy_routes_js_1.default);
 app.use('/api/organization', hierarchy_routes_js_1.default);
+app.use('/api/leaves', leave_routes_js_1.default);
+app.use('/api/attendance', leave_routes_js_1.default);
+app.use('/api/performance', performance_routes_js_1.default);
+app.use('/api/departments', department_routes_js_1.default);
+app.use('/api/analytics', analytics_routes_js_1.default);
 // 404 Handler
 app.use((_req, res) => {
     res.status(404).json({

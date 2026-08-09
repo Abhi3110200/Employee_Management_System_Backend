@@ -1,6 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.importEmployeesCSV = exports.exportEmployeesCSV = exports.restoreEmployee = exports.deleteEmployee = exports.getEmployeeReportees = exports.updateEmployeeManager = exports.updateEmployee = exports.createEmployee = exports.getEmployeeById = exports.getAllEmployees = exports.getDashboardStats = void 0;
+const mongoose_1 = __importDefault(require("mongoose"));
 const user_model_js_1 = require("../models/user.model.js");
 const hierarchy_utils_js_1 = require("../utils/hierarchy.utils.js");
 const validation_utils_js_1 = require("../utils/validation.utils.js");
@@ -183,6 +187,7 @@ const createEmployee = async (req, res) => {
             });
             return;
         }
+        const validManager = manager && typeof manager === 'string' && mongoose_1.default.Types.ObjectId.isValid(manager) ? manager : null;
         const newEmployee = new user_model_js_1.User({
             employeeId,
             name,
@@ -196,7 +201,7 @@ const createEmployee = async (req, res) => {
             joiningDate: joiningDate ? new Date(joiningDate) : new Date(),
             status: status || 'active',
             role: assignedRole,
-            manager: manager || null,
+            manager: validManager,
             profileImage: profileImage || '',
             address: address || '',
             refreshTokens: [],

@@ -4,6 +4,10 @@ import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.routes.js';
 import employeeRoutes from './routes/employee.routes.js';
 import hierarchyRoutes from './routes/hierarchy.routes.js';
+import leaveRoutes from './routes/leave.routes.js';
+import performanceRoutes from './routes/performance.routes.js';
+import departmentRoutes from './routes/department.routes.js';
+import analyticsRoutes from './routes/analytics.routes.js';
 
 const app: Express = express();
 
@@ -55,6 +59,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/hierarchy', hierarchyRoutes);
 app.use('/api/organization', hierarchyRoutes);
+app.use('/api/leaves', leaveRoutes);
+app.use('/api/attendance', leaveRoutes);
+app.use('/api/performance', performanceRoutes);
+app.use('/api/departments', departmentRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // 404 Handler
 app.use((_req: Request, res: Response) => {

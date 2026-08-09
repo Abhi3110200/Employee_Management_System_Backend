@@ -5,11 +5,12 @@ const user_model_js_1 = require("../models/user.model.js");
 const token_utils_js_1 = require("../utils/token.utils.js");
 // Helper to set HttpOnly Cookie for Refresh Token
 const setRefreshTokenCookie = (res, refreshToken) => {
+    const isProd = process.env.NODE_ENV === 'production';
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        secure: isProd,
+        sameSite: isProd ? 'none' : 'lax',
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 };
 /**
@@ -57,6 +58,7 @@ const register = async (req, res) => {
             status: 'success',
             message: 'User registered successfully',
             accessToken,
+            refreshToken,
             user: {
                 id: user._id,
                 name: user.name,
@@ -124,6 +126,7 @@ const login = async (req, res) => {
             status: 'success',
             message: 'Logged in successfully',
             accessToken,
+            refreshToken,
             user: {
                 id: user._id,
                 name: user.name,
@@ -190,6 +193,7 @@ const refreshToken = async (req, res) => {
         res.status(200).json({
             status: 'success',
             accessToken: newAccessToken,
+            refreshToken: newRefreshToken,
             user: {
                 id: user._id,
                 name: user.name,
