@@ -119,7 +119,7 @@ export const updateLeaveStatus = async (req: Request, res: Response): Promise<vo
         reviewedBy: reviewer ? reviewer.name : 'Manager',
         reviewComment: reviewComment || '',
       },
-      { new: true }
+      { returnDocument: 'after' }
     );
 
     if (!updatedRequest) {

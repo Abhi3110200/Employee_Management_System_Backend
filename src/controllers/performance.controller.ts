@@ -71,7 +71,7 @@ export const updateGoalProgress = async (req: Request, res: Response): Promise<v
     const updatedGoal = await GoalModel.findByIdAndUpdate(
       id,
       { progress: progNum, status },
-      { new: true }
+      { returnDocument: 'after' }
     );
 
     if (!updatedGoal) {
@@ -140,7 +140,7 @@ export const createOrUpdateReview = async (req: Request, res: Response): Promise
         growthAreas: growthAreas || '',
         reviewedBy: reviewer ? reviewer.name : 'Manager',
       },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: 'after' }
     );
 
     // Trigger Notification to Employee
