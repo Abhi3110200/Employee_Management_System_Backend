@@ -458,3 +458,31 @@ Bulk import parsed CSV rows.
   }
 }
 ```
+
+---
+
+## 8. Notification System Endpoints
+
+### 8.1 Get User Notifications
+Fetch personalized notifications (task assignments, leave approvals, attendance alerts, performance reviews).
+
+- **Method**: `GET`
+- **Path**: `/api/notifications`
+- **Access**: Private (Bearer Token)
+- **Returns**: Unread notification count and list of notification records.
+
+### 8.2 Mark Single Notification as Read
+- **Method**: `PATCH`
+- **Path**: `/api/notifications/:id/read`
+- **Access**: Private (Bearer Token)
+
+### 8.3 Mark All Notifications as Read
+- **Method**: `PATCH`
+- **Path**: `/api/notifications/read-all`
+- **Access**: Private (Bearer Token)
+
+### 8.4 Delete Notification
+- **Method**: `DELETE`
+- **Path**: `/api/notifications/:id`
+- **Access**: Private (Bearer Token)
+
