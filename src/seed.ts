@@ -1,6 +1,10 @@
 import 'dotenv/config';
 import mongoose from 'mongoose';
 import { User } from './models/user.model.js';
+import { DepartmentModel } from './models/department.model.js';
+import { LeaveRequestModel } from './models/leave.model.js';
+import { GoalModel, ReviewModel } from './models/performance.model.js';
+import { NotificationModel } from './models/notification.model.js';
 import { connectDB } from './config/db.js';
 
 const seedUsers = [
@@ -54,6 +58,57 @@ const seedUsers = [
   },
 ];
 
+const seedDepartments = [
+  {
+    name: 'Engineering',
+    code: 'ENG',
+    leadName: 'Super Admin',
+    leadTitle: 'Chief Technology Officer',
+    headcount: 18,
+    openPositions: 4,
+    totalBudget: 950000,
+    spentBudget: 680000,
+    color: 'from-indigo-600 to-purple-600',
+    projects: ['Kubernetes Migration', 'Dual-Token JWT Refactor', 'Org Hierarchy API'],
+  },
+  {
+    name: 'Product & Design',
+    code: 'PROD',
+    leadName: 'David Chen',
+    leadTitle: 'Chief Product Officer',
+    headcount: 10,
+    openPositions: 2,
+    totalBudget: 550000,
+    spentBudget: 390000,
+    color: 'from-amber-500 to-rose-600',
+    projects: ['Dark Glassmorphism Design System', 'Mobile App V2', 'User Analytics Dashboard'],
+  },
+  {
+    name: 'Human Resources',
+    code: 'HR',
+    leadName: 'HR Manager',
+    leadTitle: 'Lead HR Director',
+    headcount: 6,
+    openPositions: 1,
+    totalBudget: 320000,
+    spentBudget: 210000,
+    color: 'from-emerald-500 to-teal-600',
+    projects: ['Automated Onboarding Portal', 'Q3 Performance Review', 'Employee Benefits Upgrade'],
+  },
+  {
+    name: 'Marketing & PR',
+    code: 'MKT',
+    leadName: 'Emily Watson',
+    leadTitle: 'VP of Global Marketing',
+    headcount: 8,
+    openPositions: 2,
+    totalBudget: 480000,
+    spentBudget: 310000,
+    color: 'from-purple-500 to-pink-600',
+    projects: ['Annual Growth Summit 2026', 'SEO Rebrand Campaign'],
+  },
+];
+
 const seed = async () => {
   try {
     await connectDB();
@@ -79,6 +134,14 @@ const seed = async () => {
         existing.profileImage = u.profileImage;
         await existing.save();
         console.log(`[Seed] Updated existing user: ${u.email} (${u.role})`);
+      }
+    }
+
+    for (const d of seedDepartments) {
+      const existing = await DepartmentModel.findOne({ name: d.name });
+      if (!existing) {
+        await DepartmentModel.create(d);
+        console.log(`[Seed] Created department: ${d.name}`);
       }
     }
 
