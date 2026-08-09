@@ -8,6 +8,7 @@ import leaveRoutes from './routes/leave.routes.js';
 import performanceRoutes from './routes/performance.routes.js';
 import departmentRoutes from './routes/department.routes.js';
 import analyticsRoutes from './routes/analytics.routes.js';
+import notificationRoutes from './routes/notification.routes.js';
 
 const app: Express = express();
 
@@ -64,6 +65,7 @@ app.use('/api/attendance', leaveRoutes);
 app.use('/api/performance', performanceRoutes);
 app.use('/api/departments', departmentRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // 404 Handler
 app.use((_req: Request, res: Response) => {

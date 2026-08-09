@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { LeaveRequestModel } from '../models/leave.model.js';
+import { NotificationModel } from '../models/notification.model.js';
 import { User } from '../models/user.model.js';
 
 export const getLeaveRequests = async (req: Request, res: Response): Promise<void> => {
@@ -75,6 +76,14 @@ export const applyLeave = async (req: Request, res: Response): Promise<void> => 
       status: 'pending',
     });
 
+    await NotificationModel.create({
+      recipient: currentUser._id,
+      type: 'leave_update',
+      title: 'Leave Application Submitted',
+      message: `Your ${type || 'casual'} leave request for ${daysCount} day(s) was submitted for manager review.`,
+      linkHref: '/attendance',
+    });
+
     res.status(201).json({
       status: 'success',
       message: 'Leave application submitted successfully',
@@ -120,6 +129,15 @@ export const updateLeaveStatus = async (req: Request, res: Response): Promise<vo
       });
       return;
     }
+
+    // Trigger Notification to Employee
+    await NotificationModel.create({
+      recipient: updatedRequest.employee,
+      type: 'leave_update',
+      title: `Leave Request ${status === 'approved' ? 'Approved' : 'Rejected'}`,
+      message: `Your leave request for ${updatedRequest.daysCount} day(s) was ${status} by ${reviewer ? reviewer.name : 'Manager'}.${reviewComment ? ` Note: "${reviewComment}"` : ''}`,
+      linkHref: '/attendance',
+    });
 
     res.status(200).json({
       status: 'success',

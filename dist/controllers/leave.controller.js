@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateLeaveStatus = exports.applyLeave = exports.getLeaveRequests = void 0;
 const leave_model_js_1 = require("../models/leave.model.js");
+const notification_model_js_1 = require("../models/notification.model.js");
 const user_model_js_1 = require("../models/user.model.js");
 const getLeaveRequests = async (req, res) => {
     try {
@@ -69,6 +70,14 @@ const applyLeave = async (req, res) => {
             reason,
             status: 'pending',
         });
+        // Generate Notification for Employee
+        await notification_model_js_1.NotificationModel.create({
+            recipient: currentUser._id,
+            type: 'leave_update',
+            title: 'Leave Application Submitted',
+            message: `Your ${type || 'casual'} leave request for ${daysCount} day(s) was submitted for manager review.`,
+            linkHref: '/attendance',
+        });
         res.status(201).json({
             status: 'success',
             message: 'Leave application submitted successfully',
@@ -108,6 +117,14 @@ const updateLeaveStatus = async (req, res) => {
             });
             return;
         }
+        // Trigger Notification to Employee
+        await notification_model_js_1.NotificationModel.create({
+            recipient: updatedRequest.employee,
+            type: 'leave_update',
+            title: `Leave Request ${status === 'approved' ? 'Approved' : 'Rejected'}`,
+            message: `Your leave request for ${updatedRequest.daysCount} day(s) was ${status} by ${reviewer ? reviewer.name : 'Manager'}.${reviewComment ? ` Note: "${reviewComment}"` : ''}`,
+            linkHref: '/attendance',
+        });
         res.status(200).json({
             status: 'success',
             message: `Leave request ${status} successfully`,

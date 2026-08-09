@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { GoalModel, ReviewModel } from '../models/performance.model.js';
+import { NotificationModel } from '../models/notification.model.js';
 import { User } from '../models/user.model.js';
 
 export const getGoals = async (req: Request, res: Response): Promise<void> => {
@@ -35,6 +36,16 @@ export const createGoal = async (req: Request, res: Response): Promise<void> => 
       progress: Number(progress) || 0,
       status: Number(progress) === 100 ? 'completed' : 'in_progress',
     });
+
+    if (assignedUser) {
+      await NotificationModel.create({
+        recipient: assignedUser._id,
+        type: 'task_assigned',
+        title: 'New Goal / Task Assigned',
+        message: `You were assigned goal "${title}" (${category || 'OKR'}). Target due: ${dueDate || 'Sep 30'}.`,
+        linkHref: '/performance',
+      });
+    }
 
     res.status(201).json({
       status: 'success',
@@ -131,6 +142,15 @@ export const createOrUpdateReview = async (req: Request, res: Response): Promise
       },
       { upsert: true, new: true }
     );
+
+    // Trigger Notification to Employee
+    await NotificationModel.create({
+      recipient: targetUser._id,
+      type: 'performance_review',
+      title: `${quarter || 'Q3'} Performance Review Finalized`,
+      message: `Your quarterly performance score of ${rating} / 5.0 was recorded by ${reviewer ? reviewer.name : 'Manager'}.`,
+      linkHref: '/performance',
+    });
 
     res.status(200).json({
       status: 'success',

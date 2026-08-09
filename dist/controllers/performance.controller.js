@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createOrUpdateReview = exports.getReviews = exports.updateGoalProgress = exports.createGoal = exports.getGoals = void 0;
 const performance_model_js_1 = require("../models/performance.model.js");
+const notification_model_js_1 = require("../models/notification.model.js");
 const user_model_js_1 = require("../models/user.model.js");
 const getGoals = async (req, res) => {
     try {
@@ -35,6 +36,15 @@ const createGoal = async (req, res) => {
             progress: Number(progress) || 0,
             status: Number(progress) === 100 ? 'completed' : 'in_progress',
         });
+        if (assignedUser) {
+            await notification_model_js_1.NotificationModel.create({
+                recipient: assignedUser._id,
+                type: 'task_assigned',
+                title: 'New Goal / Task Assigned',
+                message: `You were assigned goal "${title}" (${category || 'OKR'}). Target due: ${dueDate || 'Sep 30'}.`,
+                linkHref: '/performance',
+            });
+        }
         res.status(201).json({
             status: 'success',
             message: 'Performance goal assigned successfully',
@@ -118,6 +128,14 @@ const createOrUpdateReview = async (req, res) => {
             growthAreas: growthAreas || '',
             reviewedBy: reviewer ? reviewer.name : 'Manager',
         }, { upsert: true, new: true });
+        // Trigger Notification to Employee
+        await notification_model_js_1.NotificationModel.create({
+            recipient: targetUser._id,
+            type: 'performance_review',
+            title: `${quarter || 'Q3'} Performance Review Finalized`,
+            message: `Your quarterly performance score of ${rating} / 5.0 was recorded by ${reviewer ? reviewer.name : 'Manager'}.`,
+            linkHref: '/performance',
+        });
         res.status(200).json({
             status: 'success',
             message: 'Performance review evaluation saved',
